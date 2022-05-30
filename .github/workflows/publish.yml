@@ -40,11 +40,9 @@ jobs:
           git-tag-version: false
 
       - name: Create NPM config
-        working-directory: './dist/'
         run: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish package
-        working-directory: './dist/'
         run: npm publish
