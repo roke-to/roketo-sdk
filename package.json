@@ -1,5 +1,8 @@
 {
-  "name": "roketo-sdk",
+  "name": "@roketo/sdk",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.1.0",
   "description": "",
   "scripts": {
