@@ -5,7 +5,7 @@ import type { RoketoStream } from "./roketo/interfaces/entities";
 import { getAvailableToWithdraw, isDead, isIdling } from "./stream";
 import { SECONDS_IN_YEAR, shortEnLocale } from "./date";
 
-function calculateEndTimestamp(stream: RoketoStream) {
+export function calculateEndTimestamp(stream: RoketoStream) {
   /**
    * if stream is not started yet or paused right now
    * then there is no way to calculate stream end time
@@ -24,6 +24,10 @@ function calculateEndTimestamp(stream: RoketoStream) {
    * othewise this stream is still working and this time will be in the future
    */
   return lastActionTime + timeToCompleteEntireStream;
+}
+
+export function calculateCliffEndTimestamp(stream: RoketoStream) {
+  return stream.cliff ? +stream.cliff / 1000_000 : null;
 }
 
 function calculateCliffPercent(stream: RoketoStream) {
@@ -54,6 +58,30 @@ export function formatTimeLeft(millisecondsLeft: number) {
   return formatDuration(duration, { locale: shortEnLocale });
 }
 
+export function getStreamProgressPercentages(
+  stream: RoketoStream,
+  withExtrapolation: boolean = true,
+) {
+  const availableToWithdraw = withExtrapolation
+    ? getAvailableToWithdraw(stream)
+    : new BigNumber(0);
+
+  const balance = new BigNumber(stream.balance);
+
+  /** progress bar calculations */
+  const full = balance.plus(stream.tokens_total_withdrawn);
+  const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
+  const streamed = withdrawn.plus(availableToWithdraw);
+
+  return {
+    left: full.minus(streamed).multipliedBy(100).dividedBy(full).toNumber(),
+    streamed: streamed.multipliedBy(100).dividedBy(full).toNumber(),
+    withdrawn: withdrawn.multipliedBy(100).dividedBy(full).toNumber(),
+    available: availableToWithdraw.multipliedBy(100).dividedBy(full).toNumber(),
+    cliff: calculateCliffPercent(stream),
+  };
+}
+
 export function streamViewData(
   stream: RoketoStream,
   withExtrapolation: boolean = true,
@@ -81,20 +109,12 @@ export function streamViewData(
 
   const left = full.minus(streamed);
 
-  const percentages = {
-    left: full.minus(streamed).multipliedBy(100).dividedBy(full).toNumber(),
-    streamed: streamed.multipliedBy(100).dividedBy(full).toNumber(),
-    withdrawn: withdrawn.multipliedBy(100).dividedBy(full).toNumber(),
-    available: availableToWithdraw.multipliedBy(100).dividedBy(full).toNumber(),
-    cliff: calculateCliffPercent(stream),
-  };
-
   return {
     isDead: isDead(stream),
-    percentages,
+    percentages: getStreamProgressPercentages(stream, withExtrapolation),
     timeLeft: formatTimeLeft(secondsLeft * 1000),
     streamEndTimestamp: calculateEndTimestamp(stream),
-    cliffEndTimestamp: stream.cliff ? +stream.cliff / 1000_000 : null,
+    cliffEndTimestamp: calculateCliffEndTimestamp(stream),
     progress: {
       full: full.toFixed(),
       withdrawn: withdrawn.toFixed(),
@@ -103,29 +123,4 @@ export function streamViewData(
       available: availableToWithdraw.toFixed(),
     },
   };
-}
-
-export function parseComment(description: string): string | null {
-  let comment = "";
-
-  try {
-    const parsedDescription = JSON.parse(description);
-    comment = parsedDescription.comment ?? parsedDescription.c;
-  } catch {
-    comment = description;
-  }
-
-  return comment ?? null;
-}
-
-export function parseColor(description: string): string | null {
-  let color = "transparent";
-
-  try {
-    const parsedDescription = JSON.parse(description);
-    color = parsedDescription.col;
-    // eslint-disable-next-line no-empty
-  } catch {}
-
-  return color ?? null;
 }

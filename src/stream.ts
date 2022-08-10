@@ -62,7 +62,7 @@ export function getStreamDirection(
   return null;
 }
 
-function getStreamLeftPercent(stream: RoketoStream) {
+export function getStreamLeftPercent(stream: RoketoStream) {
   const full = new BigNumber(stream.balance).plus(
     stream.tokens_total_withdrawn,
   );
@@ -98,4 +98,29 @@ export function ableToPauseStream(
 ) {
   const direction = getStreamDirection(stream, accountId);
   return !!direction && stream.status === "Active" && !isWithCliff(stream);
+}
+
+export function parseComment(description: string): string | null {
+  let comment = "";
+
+  try {
+    const parsedDescription = JSON.parse(description);
+    comment = parsedDescription.comment ?? parsedDescription.c;
+  } catch {
+    comment = description;
+  }
+
+  return comment ?? null;
+}
+
+export function parseColor(description: string): string | null {
+  let color = "transparent";
+
+  try {
+    const parsedDescription = JSON.parse(description);
+    color = parsedDescription.col;
+    // eslint-disable-next-line no-empty
+  } catch {}
+
+  return color ?? null;
 }
