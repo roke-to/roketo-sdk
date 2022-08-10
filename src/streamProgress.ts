@@ -48,7 +48,28 @@ function calculateCliffPercent(stream: RoketoStream) {
   return (cliffDurationMs / streamDurationMs) * 100;
 }
 
-export function formatTimeLeft(millisecondsLeft: number) {
+export function calculateTimeLeft(
+  stream: RoketoStream,
+  withExtrapolation: boolean = true,
+) {
+  const MAX_SEC = SECONDS_IN_YEAR * 1000;
+
+  const availableToWithdraw = withExtrapolation
+    ? getAvailableToWithdraw(stream)
+    : new BigNumber(0);
+
+  const balance = new BigNumber(stream.balance);
+
+  const millisecondsLeft = BigNumber.minimum(
+    MAX_SEC,
+    balance
+      .minus(availableToWithdraw)
+      .dividedBy(stream.tokens_per_sec)
+      .toFixed(),
+  )
+    .multipliedBy(1000)
+    .toNumber();
+
   const duration = intervalToDuration({ start: 0, end: millisecondsLeft });
 
   if (duration.days || duration.weeks || duration.months || duration.years) {
@@ -82,25 +103,15 @@ export function getStreamProgressPercentages(
   };
 }
 
-export function streamViewData(
+export function getStreamProgress(
   stream: RoketoStream,
   withExtrapolation: boolean = true,
 ) {
-  const MAX_SEC = SECONDS_IN_YEAR * 1000;
-
   const availableToWithdraw = withExtrapolation
     ? getAvailableToWithdraw(stream)
     : new BigNumber(0);
 
   const balance = new BigNumber(stream.balance);
-
-  const secondsLeft = BigNumber.minimum(
-    MAX_SEC,
-    balance
-      .minus(availableToWithdraw)
-      .dividedBy(stream.tokens_per_sec)
-      .toFixed(),
-  ).toNumber();
 
   /** progress bar calculations */
   const full = balance.plus(stream.tokens_total_withdrawn);
@@ -110,17 +121,10 @@ export function streamViewData(
   const left = full.minus(streamed);
 
   return {
-    isDead: isDead(stream),
-    percentages: getStreamProgressPercentages(stream, withExtrapolation),
-    timeLeft: formatTimeLeft(secondsLeft * 1000),
-    streamEndTimestamp: calculateEndTimestamp(stream),
-    cliffEndTimestamp: calculateCliffEndTimestamp(stream),
-    progress: {
-      full: full.toFixed(),
-      withdrawn: withdrawn.toFixed(),
-      streamed: streamed.toFixed(),
-      left: left.toFixed(),
-      available: availableToWithdraw.toFixed(),
-    },
+    full: full.toFixed(),
+    withdrawn: withdrawn.toFixed(),
+    streamed: streamed.toFixed(),
+    left: left.toFixed(),
+    available: availableToWithdraw.toFixed(),
   };
 }
