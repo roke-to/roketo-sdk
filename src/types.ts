@@ -87,3 +87,7 @@ export type ApiControl = {
   dao: RoketoDao;
   tokens: { [tokenId: string]: RichToken };
 };
+
+export type StreamDirection = "in" | "out";
+
+export type StreamStatus = "Initialized" | "Active" | "Paused" | "Finished";
