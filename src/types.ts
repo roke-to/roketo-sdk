@@ -10,6 +10,14 @@ import type {
   RoketoTokenMeta,
 } from "./roketo/interfaces/entities";
 
+export type { RoketoContract } from "./roketo/interfaces/contracts";
+export type {
+  RoketoAccount,
+  RoketoDao,
+  RoketoTokenMeta,
+  RoketoStream,
+} from "./roketo/interfaces/entities";
+
 export type TokenMetadata = {
   spec: null;
   name: string;

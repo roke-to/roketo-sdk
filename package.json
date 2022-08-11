@@ -3,20 +3,18 @@
   "publishConfig": {
     "access": "public"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "version": "0.1.0",
   "description": "",
   "scripts": {
     "test": "true",
     "build": "NODE_ENV=production rollup --config ./rollup.config.js"
   },
-  "author": "",
-  "license": "UNLICENSED",
+  "author": "roketo team",
+  "license": "MIT",
   "files": [
-    "dist",
-    "ft.d.ts",
-    "ft.js",
-    "roketo.d.ts",
-    "roketo.js"
+    "dist"
   ],
   "devDependencies": {
     "@babel/cli": "^7.17.10",

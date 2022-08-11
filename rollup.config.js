@@ -57,19 +57,15 @@ function createBundle({ input, output }) {
 
 export default [
   createBundle({
-    input: "./src/ft/index.ts",
-    output: "./dist/ft.js",
+    input: "./src/index.ts",
+    output: "./dist/index.js",
   }),
   createTypes({
-    input: "./src/ft/index.ts",
-    output: "./dist/ft.d.ts",
-  }),
-  createBundle({
-    input: "./src/roketo/index.ts",
-    output: "./dist/roketo.js",
+    input: "./src/index.ts",
+    output: "./dist/index.d.ts",
   }),
   createTypes({
-    input: "./src/roketo/index.ts",
-    output: "./dist/roketo.d.ts",
+    input: "./src/types.ts",
+    output: "./dist/types.d.ts",
   }),
 ];
