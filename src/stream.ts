@@ -27,7 +27,7 @@ export function hasPassedCliff(stream: RoketoStream) {
 }
 
 /**
- * @param progressAtTimestamp calculate the progress at a certain point in time.
+ * @param progressAtTimestamp calculate the progress at a certain point in time (current time by default).
  * For example it is used by notifications: they do not reflect the current state
  * of the stream, but only that, which was at the moment of their appearance,
  * so they use the moment of their creation on the server
