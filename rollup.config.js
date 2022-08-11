@@ -30,43 +30,46 @@ const external = [
   ...Object.keys(Package.devDependencies),
 ];
 
+function createTypes({ input, output }) {
+  return {
+    input,
+    output: {
+      file: output,
+      format: "es",
+    },
+    plugins: [nodeResolve(), dts()],
+    external,
+  };
+}
+
+function createBundle({ input, output }) {
+  return {
+    input,
+    output: {
+      file: output,
+      format: "cjs",
+      sourcemap: true,
+    },
+    plugins,
+    external,
+  };
+}
+
 export default [
-  {
+  createBundle({
     input: "./src/ft/index.ts",
-    output: {
-      file: "./dist/ft.js",
-      format: "cjs",
-      sourcemap: true,
-    },
-    plugins,
-    external,
-  },
-  {
+    output: "./dist/ft.js",
+  }),
+  createTypes({
     input: "./src/ft/index.ts",
-    output: {
-      file: "./dist/ft.d.ts",
-      format: "es",
-    },
-    plugins: [nodeResolve(), dts()],
-    external,
-  },
-  {
+    output: "./dist/ft.d.ts",
+  }),
+  createBundle({
     input: "./src/roketo/index.ts",
-    output: {
-      file: "./dist/roketo.js",
-      format: "cjs",
-      sourcemap: true,
-    },
-    plugins,
-    external,
-  },
-  {
+    output: "./dist/roketo.js",
+  }),
+  createTypes({
     input: "./src/roketo/index.ts",
-    output: {
-      file: "./dist/roketo.d.ts",
-      format: "es",
-    },
-    plugins: [nodeResolve(), dts()],
-    external,
-  },
+    output: "./dist/roketo.d.ts",
+  }),
 ];
