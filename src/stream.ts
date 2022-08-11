@@ -26,12 +26,21 @@ export function hasPassedCliff(stream: RoketoStream) {
   return !stream.cliff || Date.now() > +stream.cliff / 1000_000;
 }
 
-export function getAvailableToWithdraw(stream: RoketoStream): BigNumber {
+/**
+ * @param progessAtTime - calculate the progress at a certain point in time,
+ * is used by notifications: they do not reflect the current state
+ * of the stream, but only that, which was at the moment of their appearance,
+ * so they use the moment of their creation on the server (`stream.last_action`)
+ */
+export function getAvailableToWithdraw(
+  stream: RoketoStream,
+  progessAtTime = Date.now(),
+): BigNumber {
   if (isIdling(stream)) {
     return new BigNumber(0);
   }
 
-  const nowSec = millisecondsToSeconds(Date.now());
+  const nowSec = millisecondsToSeconds(progessAtTime);
   const lastActionSec = fromNanosecToSec(stream.last_action);
   const period = nowSec - lastActionSec;
 
