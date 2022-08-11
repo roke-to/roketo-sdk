@@ -84,15 +84,23 @@ export function calculateTimeLeft(
 }
 
 /**
- * @param progessAtTime - calculate the progress at a certain point in time,
+ * @param config configuration object
+ * @param config.stream stream to use
+ * @param config.progessAtTime calculate the progress at a certain point in time,
  * is used by notifications: they do not reflect the current state
  * of the stream, but only that, which was at the moment of their appearance,
  * so they use the moment of their creation on the server (`stream.last_action`)
+ * @param config.asPercentage return result as percentage
  */
-export function getStreamProgressPercentages(
-  stream: RoketoStream,
-  progessAtTime: number = Date.now(),
-) {
+export function getStreamProgress({
+  stream,
+  progessAtTime,
+  asPercentage = false,
+}: {
+  stream: RoketoStream;
+  progessAtTime?: number;
+  asPercentage?: boolean;
+}) {
   const availableToWithdraw = getAvailableToWithdraw(stream, progessAtTime);
 
   const balance = new BigNumber(stream.balance);
@@ -101,35 +109,19 @@ export function getStreamProgressPercentages(
   const full = balance.plus(stream.tokens_total_withdrawn);
   const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
   const streamed = withdrawn.plus(availableToWithdraw);
-
-  return {
-    left: full.minus(streamed).multipliedBy(100).dividedBy(full).toNumber(),
-    streamed: streamed.multipliedBy(100).dividedBy(full).toNumber(),
-    withdrawn: withdrawn.multipliedBy(100).dividedBy(full).toNumber(),
-    available: availableToWithdraw.multipliedBy(100).dividedBy(full).toNumber(),
-  };
-}
-
-/**
- * @param progessAtTime - calculate the progress at a certain point in time,
- * is used by notifications: they do not reflect the current state
- * of the stream, but only that, which was at the moment of their appearance,
- * so they use the moment of their creation on the server (`stream.last_action`)
- */
-export function getStreamProgress(
-  stream: RoketoStream,
-  progessAtTime: number = Date.now(),
-) {
-  const availableToWithdraw = getAvailableToWithdraw(stream, progessAtTime);
-
-  const balance = new BigNumber(stream.balance);
-
-  /** progress bar calculations */
-  const full = balance.plus(stream.tokens_total_withdrawn);
-  const withdrawn = new BigNumber(stream.tokens_total_withdrawn);
-  const streamed = withdrawn.plus(availableToWithdraw);
-
   const left = full.minus(streamed);
+
+  if (asPercentage) {
+    return {
+      full: "100",
+      left: String(left.multipliedBy(100).dividedBy(full).toNumber()),
+      streamed: String(streamed.multipliedBy(100).dividedBy(full).toNumber()),
+      withdrawn: String(withdrawn.multipliedBy(100).dividedBy(full).toNumber()),
+      available: String(
+        availableToWithdraw.multipliedBy(100).dividedBy(full).toNumber(),
+      ),
+    };
+  }
 
   return {
     full: full.toFixed(),
