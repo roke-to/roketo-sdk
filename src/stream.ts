@@ -40,9 +40,9 @@ export function getAvailableToWithdraw(
     return new BigNumber(0);
   }
 
-  const nowSec = millisecondsToSeconds(progressAtTimestamp);
+  const progressAtTimeInSec = millisecondsToSeconds(progressAtTimestamp);
   const lastActionSec = fromNanosecToSec(stream.last_action);
-  const period = nowSec - lastActionSec;
+  const period = progressAtTimeInSec - lastActionSec;
 
   return BigNumber.minimum(
     stream.balance,
