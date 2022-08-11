@@ -97,7 +97,7 @@ export function calculateTimeLeft(
  */
 export function getStreamProgress({
   stream,
-  progressAtTimestamp,
+  progressAtTimestamp = Date.now(),
   asPercentage = false,
 }: {
   stream: RoketoStream;
