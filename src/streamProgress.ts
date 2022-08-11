@@ -49,18 +49,21 @@ function calculateCliffPercent(stream: RoketoStream) {
 }
 
 /**
- * @param progessAtTime - calculate the progress at a certain point in time,
+ * @param progressAtTimestamp - calculate the progress at a certain point in time,
  * is used by notifications: they do not reflect the current state
  * of the stream, but only that, which was at the moment of their appearance,
  * so they use the moment of their creation on the server (`stream.last_action`)
  */
 export function calculateTimeLeft(
   stream: RoketoStream,
-  progessAtTime: number = Date.now(),
+  progressAtTimestamp: number = Date.now(),
 ) {
   const MAX_SEC = SECONDS_IN_YEAR * 1000;
 
-  const availableToWithdraw = getAvailableToWithdraw(stream, progessAtTime);
+  const availableToWithdraw = getAvailableToWithdraw(
+    stream,
+    progressAtTimestamp,
+  );
 
   const balance = new BigNumber(stream.balance);
 
@@ -86,7 +89,7 @@ export function calculateTimeLeft(
 /**
  * @param config configuration object
  * @param config.stream stream to use
- * @param config.progessAtTime calculate the progress at a certain point in time,
+ * @param config.progressAtTimestamp calculate the progress at a certain point in time,
  * is used by notifications: they do not reflect the current state
  * of the stream, but only that, which was at the moment of their appearance,
  * so they use the moment of their creation on the server (`stream.last_action`)
@@ -94,14 +97,17 @@ export function calculateTimeLeft(
  */
 export function getStreamProgress({
   stream,
-  progessAtTime,
+  progressAtTimestamp,
   asPercentage = false,
 }: {
   stream: RoketoStream;
-  progessAtTime?: number;
+  progressAtTimestamp?: number;
   asPercentage?: boolean;
 }) {
-  const availableToWithdraw = getAvailableToWithdraw(stream, progessAtTime);
+  const availableToWithdraw = getAvailableToWithdraw(
+    stream,
+    progressAtTimestamp,
+  );
 
   const balance = new BigNumber(stream.balance);
 
