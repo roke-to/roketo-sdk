@@ -72,7 +72,7 @@ export function calculateTimeLeft(
     balance
       .minus(availableToWithdraw)
       .dividedBy(stream.tokens_per_sec)
-      .toFixed(),
+      .toFixed(0),
   )
     .multipliedBy(1000)
     .toNumber();
@@ -130,10 +130,10 @@ export function getStreamProgress({
   }
 
   return {
-    full: full.toFixed(),
-    withdrawn: withdrawn.toFixed(),
-    streamed: streamed.toFixed(),
-    left: left.toFixed(),
-    available: availableToWithdraw.toFixed(),
+    full: full.toFixed(0),
+    withdrawn: withdrawn.toFixed(0),
+    streamed: streamed.toFixed(0),
+    left: left.toFixed(0),
+    available: availableToWithdraw.toFixed(0),
   };
 }

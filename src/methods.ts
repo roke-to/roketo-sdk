@@ -251,7 +251,7 @@ export async function transfer({
       "ft_transfer_call",
       {
         receiver_id: roketoContractName,
-        amount: new BigNumber(amount).toFixed(),
+        amount: new BigNumber(amount).toFixed(0),
         memo: "Roketo transfer",
         msg: JSON.stringify({
           Create: {
@@ -289,7 +289,7 @@ export async function transfer({
         "near_deposit",
         {},
         "30000000000000",
-        new BigNumber(amount).plus(depositSum).toFixed(),
+        new BigNumber(amount).plus(depositSum).toFixed(0),
       ),
     );
   }
@@ -471,7 +471,9 @@ export function createStream({
   wNearId: string;
   financeContractName: string;
 }) {
-  const totalAmount = new BigNumber(deposit).plus(commissionOnCreate).toFixed();
+  const totalAmount = new BigNumber(deposit)
+    .plus(commissionOnCreate)
+    .toFixed(0);
   const transferPayload = {
     balance: deposit,
     owner_id: accountId,
