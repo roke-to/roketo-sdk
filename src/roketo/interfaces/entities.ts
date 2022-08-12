@@ -14,7 +14,7 @@ type StreamStatus =
 
 export type RoketoStream = {
   balance: StringInt; // Tokens that are not withdrawn, tho they can be already streamed
-  cliff?: StringInt;
+  cliff?: number;
   creator_id: AccountId;
   description: string; // Custom data sent along with the stream
   id: StreamId; // Stream unique id
@@ -26,7 +26,7 @@ export type RoketoStream = {
   status: StreamStatus; // Stream status
   timestamp_created: number;
   token_account_id: AccountId;
-  tokens_per_sec: StringInt; // Streaming speed, refer to helpers.ts to learn how to convert it
+  tokens_per_sec: StringInt; // Streaming speed, refer to lib.ts to learn how to convert it
   tokens_total_withdrawn: StringInt;
 };
 
