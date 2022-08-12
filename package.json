@@ -5,7 +5,7 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "",
   "scripts": {
     "test": "true",
