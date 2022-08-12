@@ -30,7 +30,7 @@ export function calculateCliffEndTimestamp(stream: RoketoStream) {
   return stream.cliff ? +stream.cliff / 1000_000 : null;
 }
 
-function calculateCliffPercent(stream: RoketoStream) {
+export function calculateCliffPercent(stream: RoketoStream) {
   if (!stream.cliff) {
     return null;
   }
