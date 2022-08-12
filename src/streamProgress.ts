@@ -78,6 +78,10 @@ export function calculateTimeLeft(
     .multipliedBy(1000)
     .toNumber();
 
+  return formatTimeLeft(millisecondsLeft);
+}
+
+export function formatTimeLeft(millisecondsLeft: number) {
   const duration = intervalToDuration({ start: 0, end: millisecondsLeft });
 
   if (duration.days || duration.weeks || duration.months || duration.years) {
