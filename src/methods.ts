@@ -6,6 +6,7 @@ import type {
   RoketoAccount,
   RoketoStream,
   RoketoTokenMeta,
+  RoketoDao,
 } from "./roketo/interfaces/entities";
 import type {
   ApiControl,
@@ -15,6 +16,7 @@ import type {
 } from "./types";
 
 export const GAS_SIZE = "200000000000000";
+export const STORAGE_DEPOSIT = "0.0025";
 
 export function isWNearTokenId({
   tokenAccountId,
@@ -44,6 +46,7 @@ export async function initApiControl({
   const richTokens = await createRichContracts({
     account,
     tokensInfo: Object.entries(dao.tokens),
+    dao,
   });
   return {
     account,
@@ -59,11 +62,13 @@ export async function initApiControl({
 export async function createRichContracts({
   tokensInfo,
   account,
+  dao,
 }: {
   tokensInfo: Array<
     readonly [tokenAccountId: string, roketoMeta: RoketoTokenMeta]
   >;
   account: Account;
+  dao: RoketoDao;
 }): Promise<{
   [tokenId: string]: RichToken;
 }> {
@@ -76,6 +81,11 @@ export async function createRichContracts({
           getTokenMetadata({ tokenContract }),
           getBalance({ accountId, tokenContract }),
         ]);
+
+        const commission = roketoMeta.is_payment
+          ? roketoMeta.commission_on_create
+          : dao.commission_non_payment_ft;
+
         return [
           tokenAccountId,
           {
@@ -83,6 +93,7 @@ export async function createRichContracts({
             meta,
             balance,
             tokenContract,
+            commission,
           },
         ];
       }),
@@ -234,17 +245,15 @@ export async function transfer({
   wNearId: string;
   financeContractName: string;
 }) {
-  const storageDepositAccountIds = [
-    roketoContractName,
-    financeContractName,
-    payload.owner_id,
-    payload.receiver_id,
-  ];
-  const isRegisteredAccountIds = await Promise.all(
-    storageDepositAccountIds.map((accountId) =>
-      isRegistered({ accountId, tokenContract }),
-    ),
-  );
+  const storageDepositAccountIds = [payload.owner_id, payload.receiver_id];
+
+  const { isRegisteredAccountIds, depositSum, depositAmount } =
+    await countStorageDeposit({
+      tokenContract,
+      storageDepositAccountIds,
+      roketoContractName,
+      financeContractName,
+    });
 
   const actions = [
     transactionMediator.functionCall(
@@ -264,10 +273,6 @@ export async function transfer({
     ),
   ];
 
-  let depositSum = new BigNumber(0);
-  /** account creation costs either 0.00125 NEAR for storage, or 0.0125 NEAR for bridged FT */
-  const depositAmount = utils.format.parseNearAmount("0.0125")!;
-
   storageDepositAccountIds.forEach((accountId, index) => {
     if (!isRegisteredAccountIds[index]) {
       actions.unshift(
@@ -278,8 +283,6 @@ export async function transfer({
           depositAmount,
         ),
       );
-
-      depositSum = depositSum.plus(depositAmount);
     }
   });
 
@@ -299,6 +302,45 @@ export async function transfer({
     walletCallbackUrl: callbackUrl,
     actions,
   });
+}
+
+export async function countStorageDeposit({
+  tokenContract,
+  storageDepositAccountIds,
+  roketoContractName,
+  financeContractName,
+}: {
+  tokenContract: FTContract;
+  storageDepositAccountIds: Array<string>;
+  roketoContractName: string;
+  financeContractName: string;
+}) {
+  const allAccountIds = [
+    ...storageDepositAccountIds,
+    roketoContractName,
+    financeContractName,
+  ];
+
+  const isRegisteredAccountIds = await Promise.all(
+    allAccountIds.map((accountId) =>
+      isRegistered({ accountId, tokenContract }),
+    ),
+  );
+
+  let depositSum = new BigNumber(0);
+  /** account creation costs 0.0025 NEAR for storage */
+  const depositAmount = utils.format.parseNearAmount(STORAGE_DEPOSIT)!;
+
+  allAccountIds.forEach((accountId, index) => {
+    if (!isRegisteredAccountIds[index])
+      depositSum = depositSum.plus(depositAmount);
+  });
+
+  return {
+    isRegisteredAccountIds,
+    depositSum,
+    depositAmount,
+  };
 }
 
 async function getAccount({
@@ -327,7 +369,7 @@ async function getAccount({
     .catch(() => emptyAccount);
 }
 
-function getDao({ contract }: { contract: RoketoContract }) {
+export function getDao({ contract }: { contract: RoketoContract }) {
   return contract.get_dao();
 }
 
