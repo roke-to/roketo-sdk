@@ -30,27 +30,30 @@ export function isWNearTokenId({
 
 export async function initApiControl({
   account,
+  accountId,
   transactionMediator,
   roketoContractName,
 }: {
   account: Account;
+  accountId?: string;
   transactionMediator: TransactionMediator;
   roketoContractName: string;
 }): Promise<ApiControl> {
-  const { accountId } = account;
+  const currentAccountId = accountId || account.accountId;
   const contract = createRoketoContract({ account, roketoContractName });
   const [roketoAccount, dao] = await Promise.all([
-    getAccount({ contract, accountId }),
+    getAccount({ contract, accountId: currentAccountId }),
     getDao({ contract }),
   ]);
   const richTokens = await createRichContracts({
     account,
+    accountId,
     tokensInfo: Object.entries(dao.tokens),
     dao,
   });
   return {
     account,
-    accountId,
+    accountId: currentAccountId,
     contract,
     roketoAccount,
     dao,
@@ -62,24 +65,26 @@ export async function initApiControl({
 export async function createRichContracts({
   tokensInfo,
   account,
+  accountId,
   dao,
 }: {
   tokensInfo: Array<
     readonly [tokenAccountId: string, roketoMeta: RoketoTokenMeta]
   >;
   account: Account;
+  accountId?: string;
   dao: RoketoDao;
 }): Promise<{
   [tokenId: string]: RichToken;
 }> {
-  const { accountId } = account;
+  const currentAccountId = accountId || account.accountId;
   return Object.fromEntries(
     await Promise.all(
       tokensInfo.map(async ([tokenAccountId, roketoMeta]) => {
         const tokenContract = createTokenContract({ account, tokenAccountId });
         const [meta, balance] = await Promise.all([
           getTokenMetadata({ tokenContract }),
-          getBalance({ accountId, tokenContract }),
+          getBalance({ accountId: currentAccountId, tokenContract }),
         ]);
 
         const commission = roketoMeta.is_payment

@@ -1,5 +1,6 @@
 import { Account, Contract, transactions, utils } from "near-api-js";
 import BigNumber from "bignumber.js";
+import BN from 'bn.js';
 import JSONBigInt from "json-bigint";
 
 import {
@@ -140,8 +141,9 @@ export class FTApi {
             },
           }),
         },
-        "100000000000000",
-        1,
+        // "100 000 000 000 000",
+          new BN(100* 10 ** 12),
+        new BN(1),
       ),
     ];
 
@@ -153,8 +155,9 @@ export class FTApi {
         transactions.functionCall(
           "storage_deposit",
           { account_id: payload.owner_id },
-          "30000000000000",
-          depositAmmount,
+          // "30000000000000",
+            new BN(30* 10 ** 12),
+            new BN(depositAmmount),
         ),
       );
 
@@ -166,8 +169,9 @@ export class FTApi {
         transactions.functionCall(
           "storage_deposit",
           { account_id: payload.receiver_id },
-          "30000000000000",
-          depositAmmount,
+          // "30000000000000",
+            new BN(30* 10 ** 12),
+            new BN(depositAmmount),
         ),
       );
 
@@ -179,8 +183,9 @@ export class FTApi {
         transactions.functionCall(
           "near_deposit",
           {},
-          "30000000000000",
-          new BigNumber(amount).plus(depositSumm).toFixed(),
+          // "30 000 000 000 000",
+            new BN(30* 10 ** 12),
+            new BN(new BigNumber(amount).plus(depositSumm).toFixed().toString()),
         ),
       );
     }
