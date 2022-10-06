@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  publish-to-npm:
+  build:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -27,6 +27,28 @@ jobs:
         env:
           CI: true
 
+  bump-version:
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    name: "Bump version and create changelog with commitizen"
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          token: "${{ secrets.GITHUB_ACCESS_TOKEN }}"
+          fetch-depth: 0
+      - name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+
+  publish-to-npm:
+    runs-on: ubuntu-18.04
+    needs:
+      - bump-version
+    steps:
       - name: Extract version
         id: version
         uses: olegtarasov/get-tag@v2.1
