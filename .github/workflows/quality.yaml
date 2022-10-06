@@ -1,0 +1,12 @@
+name: Check quality
+
+on:
+  pull_request:
+
+jobs:
+  lint-commit-message:
+    runs-on: ubuntu-latest
+    name: "Lint commit message"
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn commit-lint
