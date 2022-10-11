@@ -1,5 +1,5 @@
 [tool.commitizen]
-version = "0.3.0"  # This should be your current semver version
+version = "0.4.0"  # This should be your current semver version
 version_files = [
     "package.json:version",
     ".cz.toml:version"
