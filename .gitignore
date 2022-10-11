@@ -234,4 +234,3 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,node,rust
 .idea
-/.husky/commit-msg
