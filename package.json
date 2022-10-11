@@ -38,7 +38,6 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.0",
     "jest": "^28.1.0",
-    "near-api-js": "^1.0.0",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "rollup": "^2.74.1",
@@ -53,7 +52,7 @@
   },
   "peerDependencies": {
     "bn.js": "^5.2.1",
-    "near-api-js": "^1.0.0"
+    "near-api-js": "^0.44.1"
   },
   "config": {
     "commitizen": {
