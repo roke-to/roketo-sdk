@@ -1,3 +1,11 @@
+## 0.4.1 (2022-10-11)
+
+### Fix
+
+- ci build-publish workflow
+- ci build-publish workflow
+- ci build-publish workflow
+
 ## 0.4.0 (2022-10-11)
 
 ### Feat
