@@ -9,7 +9,8 @@
   "description": "",
   "scripts": {
     "test": "true",
-    "build": "NODE_ENV=production rollup --config ./rollup.config.js"
+    "build": "NODE_ENV=production rollup --config ./rollup.config.js",
+    "postinstall": "husky install"
   },
   "author": "roketo team",
   "license": "MIT",
