@@ -38,7 +38,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.0",
     "jest": "^28.1.0",
-    "near-api-js": "^1.0.0",
+    "near-api-js": "^1.1.0",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "rollup": "^2.74.1",
@@ -49,11 +49,12 @@
     "bignumber.js": "^9.1.0",
     "date-fns": "^2.28.0",
     "json-bigint": "^1.0.0",
-    "numbro": "^2.3.6"
+    "numbro": "^2.3.6",
+    "peer": "^0.6.1"
   },
   "peerDependencies": {
     "bn.js": "^5.2.1",
-    "near-api-js": "^1.0.0"
+    "near-api-js": "^1.1.0"
   },
   "config": {
     "commitizen": {
