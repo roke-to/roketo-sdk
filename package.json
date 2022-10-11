@@ -52,7 +52,7 @@
   },
   "peerDependencies": {
     "bn.js": "^5.2.1",
-    "near-api-js": "^0.44.1"
+    "near-api-js": "^1.1.0"
   },
   "config": {
     "commitizen": {
